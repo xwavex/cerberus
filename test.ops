@@ -1,0 +1,70 @@
+import("eigen_typekit")
+import("kdl_typekit")
+import("rst-rt_typekit")
+
+import("rtt_gazebo_embedded")
+import("rtt-gazebo-robot-sim")
+require("os")
+
+loadComponent("gazebo","RTTGazeboEmbedded")
+setActivity("gazebo",0,10,ORO_SCHED_OTHER)
+gazebo.argv = strings("--verbose")
+gazebo.add_plugin("libRTTGazeboClockPlugin.so")
+
+loadComponent("robot_gazebo","cogimon::robotSim")
+setActivity("robot_gazebo",0,10,ORO_SCHED_OTHER)
+
+loadComponent("robot_gazebo2","cogimon::robotSim")
+setActivity("robot_gazebo2",0,10,ORO_SCHED_OTHER)
+
+gazebo.configure()
+gazebo.start()
+gazebo.toggleDynamicsSimulation(false)
+
+# load model (coman without hands)
+gazebo.spawn_model("robotmodel", "model://kuka-lwr-4plus", 10)
+gazebo.spawn_model_at_pos("robotmodel2", "model://kuka-lwr-4plus", 0.2,0,0)
+
+var string path_model_urdf = "/home/dwigand/citk/systems/cogimon-minimal-nightly/share/gazebo/models/cogimon/kuka-lwr-4plus/model.urdf"
+var string path_model_srdf = "/home/dwigand/citk/systems/cogimon-minimal-nightly/share/gazebo/models/cogimon/kuka-lwr-4plus/model.srdf"
+
+robot_gazebo.getModel("robotmodel")
+robot_gazebo.loadURDFAndSRDF(path_model_urdf, path_model_srdf)
+robot_gazebo.configure()
+
+robot_gazebo2.getModel("robotmodel2")
+robot_gazebo2.loadURDFAndSRDF(path_model_urdf, path_model_srdf)
+robot_gazebo2.configure()
+
+var rstrt.kinematics.JointAngles initJointAngles = rstrt.kinematics.JointAngles(7)
+initJointAngles.angles[0] = 0.0410
+initJointAngles.angles[1] = 0.0606
+initJointAngles.angles[2] = -0.0154
+initJointAngles.angles[3] = -1.3954
+initJointAngles.angles[4] = -0.0548
+initJointAngles.angles[5] = 1.1377
+initJointAngles.angles[6] = 0.0
+gazebo.setInitialConfigurationForModel("robotmodel", initJointAngles);
+
+#robot_gazebo.setControlMode("full_arm", "JointTorqueCtrl")
+gazebo.toggleDynamicsSimulation(true)
+
+import("cogimon-urdf-to-kdl")
+loadComponent("cerberus", "TemplateComponent")
+setActivity("cerberus",0.01,10,ORO_SCHED_OTHER)
+cerberus.configure();
+
+cerberus.addRobot("robot1", path_model_urdf, path_model_srdf, rstrt.geometry.Pose(rstrt.geometry.Translation(0,0,0), rstrt.geometry.Rotation(1,0,0,0)))
+cerberus.addRobot("robot2", path_model_urdf, path_model_srdf, rstrt.geometry.Pose(rstrt.geometry.Translation(0.2,0,0), rstrt.geometry.Rotation(1,0,0,0)))
+
+
+var ConnPolicy cp;
+connect("robot_gazebo.full_arm_JointFeedback", "cerberus.in_jointFeedback_robot_1_port", cp)
+connect("robot_gazebo2.full_arm_JointFeedback", "cerberus.in_jointFeedback_robot_2_port", cp)
+cerberus.start()
+
+#robot_gazebo.setControlMode("full_arm","JointTorqueCtrl")
+#robot_gazebo.setControlMode("full_arm","JointPositionCtrl")
+
+# var array init(7)
+#ini[3]=0.1
