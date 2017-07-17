@@ -88,13 +88,19 @@ private:
 
     std::map<std::string, std::shared_ptr<RobotDescription> > _robots;
 
+
+    RTT::OutputPort<bool> out_emergency_port;
+
 //    // Declare output ports and their datatypes
 //        RTT::OutputPort<rstrt::dynamics::JointTorques> out_torques_port;
 //    // variables
 //    // rstrt::dynamics::JointTorques in_torquesA_var;
 //     rstrt::dynamics::JointTorques out_torques_var;
-    double startTime;
+//    double startTime;
     unsigned int DOFsize;
+    // in meters
+    double threshold;
+    long long ss, ee;
 
     KDL::JntArray joints_kdl_1, joints_kdl_2;
     std::map<std::string, KDL::JntArray> joint_updates;

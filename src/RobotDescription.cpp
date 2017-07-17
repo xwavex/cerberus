@@ -480,7 +480,7 @@ bool RobotDescription::transformAllLinkCollisionObjects(const KDL::JntArray &joi
 				}
 
 				Eigen::AngleAxis<double> axisTransform(angleValue, Eigen::Vector3d(_joint_axis[_link_names[i]].x,_joint_axis[_link_names[i]].y, _joint_axis[_link_names[i]].z));
-				std::cout << "axisTransform:\n" << axisTransform.axis() << ",\n" << axisTransform.angle() << std::endl;
+//				std::cout << "axisTransform:\n" << axisTransform.axis() << ",\n" << axisTransform.angle() << std::endl;
 
 				baseIteration = (baseIteration * _joint_transforms[_link_names[i]]);
 				baseIteration.rotate(axisTransform);

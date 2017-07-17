@@ -12,14 +12,16 @@
 TemplateComponent::TemplateComponent(std::string const & name) :
 		RTT::TaskContext(name), in_jointFeedback_robot_1_flow(RTT::NoData), in_jointFeedback_robot_2_flow(
 				RTT::NoData), in_jointTorqueCmd_robot_1_flow(RTT::NoData), in_jointTorqueCmd_robot_2_flow(
-				RTT::NoData), DOFsize(7) {
+				RTT::NoData), DOFsize(7), threshold(0.20), ss(0), ee(0) {
 
 	addOperation("setDOFsize", &TemplateComponent::setDOFsize, this).doc(
 			"set DOF size");
 	addOperation("computeDistance", &TemplateComponent::computeDistance, this);
 
 	addOperation("addRobot", &TemplateComponent::addRobot, this);
-	startTime = 0.0;
+
+	addProperty("threshold", threshold);
+//	startTime = 0.0;
 }
 
 bool TemplateComponent::configureHook() {
@@ -35,6 +37,12 @@ bool TemplateComponent::configureHook() {
 	ports()->addPort(in_jointFeedback_robot_2_port);
 	in_jointFeedback_robot_2_flow = RTT::NoData;
 
+	out_emergency_port.setName("out_emergency_port");
+	out_emergency_port.doc("Output port for sending true, when the robot is about to collide (threshold-based)");
+	out_emergency_port.setDataSample(false);
+	ports()->addPort(out_emergency_port);
+
+
 	joints_kdl_1.resize(DOFsize);
 	joints_kdl_1.data.fill(0);
 
@@ -44,38 +52,38 @@ bool TemplateComponent::configureHook() {
 }
 
 bool TemplateComponent::startHook() {
-	startTime = this->getSimulationTime();
+//	startTime = this->getSimulationTime();
 	return true;
 }
 
 void TemplateComponent::computeDistance() {
-	RTT::log(RTT::Error) << "1" << RTT::endlog();
+//	RTT::log(RTT::Error) << "1" << RTT::endlog();
 	if (in_jointFeedback_robot_1_flow != RTT::NoData) {
-		RTT::log(RTT::Error) << "2" << RTT::endlog();
+//		RTT::log(RTT::Error) << "2" << RTT::endlog();
 		for (unsigned int i = 0; i < DOFsize; i++) {
 			joints_kdl_1(i) = in_jointFeedback_robot_1_var.angles(i);
 		}
-		RTT::log(RTT::Error) << "joints_kdl_1\n" << joints_kdl_1.data << RTT::endlog();
+//		RTT::log(RTT::Error) << "joints_kdl_1\n" << joints_kdl_1.data << RTT::endlog();
 	}
 
 	if (in_jointFeedback_robot_2_flow != RTT::NoData) {
 		for (unsigned int i = 0; i < DOFsize; i++) {
 			joints_kdl_2(i) = in_jointFeedback_robot_2_var.angles(i);
 		}
-		RTT::log(RTT::Error) << "joints_kdl_2\n" << joints_kdl_2.data << RTT::endlog();
+//		RTT::log(RTT::Error) << "joints_kdl_2\n" << joints_kdl_2.data << RTT::endlog();
 	}
 
 	joint_updates["robot1"] = joints_kdl_1;
 	joint_updates["robot2"] = joints_kdl_2;
 
-	RTT::log(RTT::Error) << "3 : size = " << _robots.size() << RTT::endlog();
+//	RTT::log(RTT::Error) << "3 : size = " << _robots.size() << RTT::endlog();
 	for (auto const& robot : _robots) {
 		// update joint positions in all robots
 		robot.second->transformAllLinkCollisionObjects(joint_updates[robot.first]);
-		RTT::log(RTT::Error) << "3a" << RTT::endlog();
-		RTT::log(RTT::Error) << "robots" << RTT::endlog();
+//		RTT::log(RTT::Error) << "3a" << RTT::endlog();
+//		RTT::log(RTT::Error) << "robots" << RTT::endlog();
 	}
-	RTT::log(RTT::Error) << "4" << RTT::endlog();
+//	RTT::log(RTT::Error) << "4" << RTT::endlog();
 
 
 //render TODO
@@ -144,17 +152,17 @@ void TemplateComponent::computeDistance() {
 							r2name = robot_J.first;
 						}
 
-						RTT::log(RTT::Warning) << "Collision Result: robot "
-								<< robot_I.first << " vs. robot "
-								<< robot_J.first << " between link "
-								<< robot_i_link_names[link_i] << " and link "
-								<< robot_j_link_names[link_j] << ":\n"
-								<< " min_distance: " << result.min_distance
-								<< "\n" << " nearest_points[0]: "
-								<< result.nearest_points[0] << "\n"
-								<< " nearest_points[1]: "
-								<< result.nearest_points[1] << "\n"
-								<< RTT::endlog();
+//						RTT::log(RTT::Warning) << "Collision Result: robot "
+//								<< robot_I.first << " vs. robot "
+//								<< robot_J.first << " between link "
+//								<< robot_i_link_names[link_i] << " and link "
+//								<< robot_j_link_names[link_j] << ":\n"
+//								<< " min_distance: " << result.min_distance
+//								<< "\n" << " nearest_points[0]: "
+//								<< result.nearest_points[0] << "\n"
+//								<< " nearest_points[1]: "
+//								<< result.nearest_points[1] << "\n"
+//								<< RTT::endlog();
 					}
 				}
 
@@ -162,17 +170,26 @@ void TemplateComponent::computeDistance() {
 		}
 	}
 
-	RTT::log(RTT::Error) << "\n\n\n";
-		std::cout << "resultFinal Collision Result: robot " << r1name << " vs. " << r2name << " between " << link1 << " : " << link2
+//	RTT::log(RTT::Error) << "\n\n\n";
+	RTT::log(RTT::Error) << "resultFinal Collision Result: robot " << r1name << " vs. " << r2name << " between " << link1 << " : " << link2
 									<< " min_distance: " << resultFinal.min_distance << "\n"
 									<< " nearest_points[0]: " << resultFinal.nearest_points[0] << "\n"
 									<< " nearest_points[1]: " << resultFinal.nearest_points[1] << "\n"
 									<< RTT::endlog();
 
+	if (resultFinal.min_distance < threshold) {
+		out_emergency_port.write(true);
+		RTT::log(RTT::Error) << "Activate Emergency Trigger!" << RTT::endlog();
+	}else{
+		// perhaps we dont need this!
+		out_emergency_port.write(false);
+	}
+
 }
 
 void TemplateComponent::updateHook() {
-
+//	double startTime = getSimulationTime();
+	ss = RTT::os::TimeService::Instance()->getTicks();
 	// this is the actual body of a component. it is called on each cycle
 //	if (in_jointFeedback_robot_1_port.connected()) {
 	// read data and save state of data into "Flow", which can be "NewData", "OldData" or "NoData".
@@ -180,9 +197,16 @@ void TemplateComponent::updateHook() {
 			in_jointFeedback_robot_1_var);
 	in_jointFeedback_robot_2_flow = in_jointFeedback_robot_2_port.read(
 			in_jointFeedback_robot_2_var);
+
+
+	computeDistance();
 //	}
 
 	// out_torques_port.write(out_torques_var);
+//	double endTime = getSimulationTime();
+	ee = RTT::os::TimeService::Instance()->getTicks();
+	RTT::log(RTT::Warning) << "Calculation took " << 1E-9
+			* RTT::os::TimeService::ticks2nsecs(ee - ss) << RTT::endlog();
 }
 
 void TemplateComponent::stopHook() {
@@ -265,17 +289,14 @@ bool TemplateComponent::addRobot(std::string robot_name, std::string urdf,
 	std::vector<std::string> robot_link_names = robot->getAllLinkNames();
 	RTT::log(RTT::Error) << "robot_link_names.size() = " << robot_link_names.size() << RTT::endlog();
 	for (int i = 0; i < robot_link_names.size(); i++) {
-		RTT::log(RTT::Warning) << "1" << RTT::endlog();
+//		RTT::log(RTT::Warning) << "1" << RTT::endlog();
 
 		fcl::CollisionObjectd* collObj = robot->getCollisionObjectForLink(robot_link_names[i]).get();
 
-		std::cout << "outtt TranslationOrigin:\n" << collObj->getTranslation() << std::endl;
-		std::cout << "outtt RotationOrigin:\n" << collObj->getRotation() << std::endl;
+//		std::cout << "outtt TranslationOrigin:\n" << collObj->getTranslation() << std::endl;
+//		std::cout << "outtt RotationOrigin:\n" << collObj->getRotation() << std::endl;
 
-//		double startTime = getSimulationTime();
-//		double endTime = 0.0;
-
-		RTT::log(RTT::Warning) << "4" << RTT::endlog();
+//		RTT::log(RTT::Warning) << "4" << RTT::endlog();
 	}
 
 	RTT::log(RTT::Warning) << "Finished!" << RTT::endlog();
