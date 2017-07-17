@@ -99,9 +99,9 @@ private:
     KDL::JntArray joints_kdl_1, joints_kdl_2;
     std::map<std::string, KDL::JntArray> joint_updates;
 
-    //render TODO
-    gazebo::transport::NodePtr node;
-    gazebo::transport::PublisherPtr factoryPub;
+//    //render TODO
+//    gazebo::transport::NodePtr node;
+//    gazebo::transport::PublisherPtr factoryPub;
 };
 #endif
 
