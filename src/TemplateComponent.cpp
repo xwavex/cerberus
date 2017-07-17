@@ -40,16 +40,6 @@ bool TemplateComponent::configureHook() {
 
 	joints_kdl_2.resize(DOFsize);
 	joints_kdl_2.data.fill(0);
-
-//	// Create a new transport node
-//	node = gazebo::transport::NodePtr(new gazebo::transport::Node());
-//
-//	// Initialize the node with the world name
-//	node->Init(gazebo::physics::get_world()->GetName());
-//
-//	// Create a publisher on the ~/factory topic
-//	factoryPub = node->Advertise<gazebo::msgs::Factory>("~/factory");
-
 	return true;
 }
 
@@ -89,65 +79,12 @@ void TemplateComponent::computeDistance() {
 
 
 //render TODO
-	std::vector<std::string> robot_1_link_names = _robots["robot1"]->getAllLinkNames();
-	for (int i = 0; i < robot_1_link_names.size(); i++) {
-//		std::string model_name = "robot_link_box";
-//		if (i > 0) {
-//			model_name = "robot_link_box_" + boost::lexical_cast<std::string>(i-1);
-//		}
-
-		fcl::CollisionObjectd* collObj = _robots["robot1"]->getCollisionObjectForLink(robot_1_link_names[i]).get();
-		collObj->computeAABB();
-		fcl::AABB<double> aabb = collObj->getAABB();
-
-//		gazebo::physics::ModelPtr mpr = gazebo::physics::get_world()->GetModel(model_name);
-//		while(!mpr) {
-//			mpr = gazebo::physics::get_world()->GetModel(model_name);
-//		}
-//		mpr->SetScale(ignition::math::Vector3d(aabb.width(), aabb.height(), aabb.depth()));
-//		mpr->SetWorldPose(ignition::math::Pose3d(ignition::math::Vector3d(aabb.center()[0], aabb.center()[1], aabb.center()[2]),
-//				ignition::math::Quaterniond(0, 0, 0)), false, false);
-//
-//
-//
-//	std::cout << "ModelNameee: " << model_name << " Translation: t(" << collObj->getTranslation()[0] << ", " << collObj->getTranslation()[1] << ", " << collObj->getTranslation()[2]
-//			  << ")\nr(" << collObj->getQuatRotation().w() << ", " << collObj->getQuatRotation().x() << ", " << collObj->getQuatRotation().y() << ", " << collObj->getQuatRotation().z() << ")" << std::endl;
-
-
-//		if (mpr) {
-//			mpr->SetWorldPose(
-//					ignition::math::Pose3d(
-//							ignition::math::Vector3d(
-//									collObj->getTranslation()[0],
-//									collObj->getTranslation()[1],
-//									collObj->getTranslation()[2]),
-//							ignition::math::Quaterniond(
-//									collObj->getQuatRotation().w(),
-//									collObj->getQuatRotation().x(),
-//									collObj->getQuatRotation().y(),
-//									collObj->getQuatRotation().z())), true,
-//					true);
-//
-//
-////			gazebo::rendering::ScenePtr scene = gazebo::rendering::get_scene();
-////			if (scene && scene->Initialized()) {
-////				std::cout << "yay scene! got ya!" << std::endl;
-////
-////				gazebo::rendering::VisualPtr linkVisual = scene->GetVisual(model_name);
-////				if (linkVisual) {
-////					std::cout << "found visual for: " << model_name << std::endl;
-////					linkVisual->SetWireframe(true);
-////				}
-////			}
-//		}
-
-
-	}
-
-
-
-
-
+//	std::vector<std::string> robot_1_link_names = _robots["robot1"]->getAllLinkNames();
+//	for (int i = 0; i < robot_1_link_names.size(); i++) {
+//		fcl::CollisionObjectd* collObj = _robots["robot1"]->getCollisionObjectForLink(robot_1_link_names[i]).get();
+//		collObj->computeAABB();
+//		fcl::AABB<double> aabb = collObj->getAABB();
+//	}
 
 
 	// test results
@@ -322,91 +259,26 @@ bool TemplateComponent::addRobot(std::string robot_name, std::string urdf,
 	robot->setOrigin(origin);
 
 
-
-	//render TODO
 	KDL::JntArray joints_kdl(7);
-//	joints_kdl.data[0] = 1.515;
 	robot->transformAllLinkCollisionObjects(joints_kdl);
 
 	std::vector<std::string> robot_link_names = robot->getAllLinkNames();
 	RTT::log(RTT::Error) << "robot_link_names.size() = " << robot_link_names.size() << RTT::endlog();
 	for (int i = 0; i < robot_link_names.size(); i++) {
 		RTT::log(RTT::Warning) << "1" << RTT::endlog();
-		// spawn the box
-		// Create the message
-//		gazebo::msgs::Factory msg;
-
-//		std::string model_name = "robot_link_box";
-//		if (i > 0) {
-//			model_name = "robot_link_box_" + boost::lexical_cast<std::string>(i-1);
-//		}
-
-		// Model file to load
-		//robot_link_box, robot_link_box_0, robot_link_box_1
-//		msg.set_sdf_filename("model://" + model_name);
-
 
 		fcl::CollisionObjectd* collObj = robot->getCollisionObjectForLink(robot_link_names[i]).get();
 
 		std::cout << "outtt TranslationOrigin:\n" << collObj->getTranslation() << std::endl;
 		std::cout << "outtt RotationOrigin:\n" << collObj->getRotation() << std::endl;
 
-//		RTT::log(RTT::Warning) << "2" << RTT::endlog();
-//		collObj->computeAABB();
-//		fcl::AABB<double> aabb = collObj->getAABB();
-//
-//		RTT::log(RTT::Error) << "Spawn: Set center to: " << aabb.center()[0] << ", " << aabb.center()[1] << ", " << aabb.center()[2] << RTT::endlog();
-//		std::cout << "AABB: Center: " << aabb.center()[0] << ", " << aabb.center()[1] << ", " << aabb.center()[2] << std::endl;
-//		std::cout << "AABB: w,h,d: " << aabb.width() << ", " << aabb.height() << ", " << aabb.depth() << std::endl;
-
-		// Pose to initialize the model to
-//		gazebo::msgs::Set(msg.mutable_pose(),
-//				ignition::math::Pose3d(ignition::math::Vector3d(aabb.center()[0], aabb.center()[1], aabb.center()[2]),
-//						ignition::math::Quaterniond(?, ?, ?, ?)));
-//
-//
-//		std::cout << "ModelNamee-: " << model_name << "\nt(" << collObj->getTranslation()[0] << ", " << collObj->getTranslation()[1] << ", " << collObj->getTranslation()[2]
-//					  << ")\nr(" << collObj->getQuatRotation().w() << ", " << collObj->getQuatRotation().x() << ", " << collObj->getQuatRotation().y() << ", " << collObj->getQuatRotation().z() << ")" << std::endl;
-//
-//
-//
-//		gazebo::msgs::Set(msg.mutable_pose(),
-//						ignition::math::Pose3d(ignition::math::Vector3d(collObj->getTranslation()[0], collObj->getTranslation()[1], collObj->getTranslation()[2]),
-//								ignition::math::Quaterniond(collObj->getQuatRotation().w(), collObj->getQuatRotation().x(), collObj->getQuatRotation().y(), collObj->getQuatRotation().z())));
-//
-//
-//
-//
-
-
-//		RTT::log(RTT::Warning) << "3" << RTT::endlog();
-//		 Send the message
-//		factoryPub->Publish(msg);
-//		gazebo::physics::get_world()->InsertModelFile("model://box");
-
-
-		double startTime = getSimulationTime();
-		double endTime = 0.0;
+//		double startTime = getSimulationTime();
+//		double endTime = 0.0;
 
 		RTT::log(RTT::Warning) << "4" << RTT::endlog();
-//		gazebo::physics::ModelPtr mpr = gazebo::physics::get_world()->GetModel(model_name);
-//		while(!mpr && ((endTime - startTime) < 10)) {
-//			mpr = gazebo::physics::get_world()->GetModel(model_name);
-////			RTT::log(RTT::Warning) << "Polling! " << (endTime - startTime) << RTT::endlog();
-//			endTime = getSimulationTime();
-//		}
-//		RTT::log(RTT::Error) << "Found " << model_name << "Set scale to: " << aabb.width() << ", " << aabb.height() << ", " << aabb.depth() << RTT::endlog();
-//		mpr->SetScale(ignition::math::Vector3d(aabb.width(), aabb.height(), aabb.depth()));
-
-
-//		if (mpr) {
-//			std::cout << "WorldPoase: " << 	mpr->GetWorldPose() << std::endl;
-//			RTT::log(RTT::Warning) << "5" << RTT::endlog();
-//		}
 	}
+
 	RTT::log(RTT::Warning) << "Finished!" << RTT::endlog();
-
-
 	_robots[robot_name] = robot;
 
 	return true;
@@ -414,35 +286,6 @@ bool TemplateComponent::addRobot(std::string robot_name, std::string urdf,
 
 void TemplateComponent::setDOFsize(unsigned int DOFsize) {
 	this->DOFsize = DOFsize;
-
-//	Ogre::ManualObject* manual = new Ogre::ManualObject("firstMO");
-//	manual->begin("BaseWhiteNoLighting", Ogre::RenderOperation::OT_LINE_STRIP);
-//
-//	// define vertex position of index 0..3
-//	manual->position(-100.0, -100.0, 0.0);
-//	manual->position( 100.0, -100.0, 0.0);
-//	manual->position( 100.0,  100.0, 0.0);
-//	manual->position(-100.0,  100.0, 0.0);
-//
-//	// define usage of vertices by refering to the indexes
-//	manual->index(0);
-//	manual->index(1);
-//	manual->index(2);
-//	manual->index(3);
-//	manual->index(0);
-//
-//	manual->end();
-//
-//	gazebo::physics::ModelPtr model = gazebo::physics::get_world()->GetModel("robot1");
-//	gazebo::rendering::ScenePtr scene = gazebo::rendering::get_scene();
-//	gazebo::rendering::VisualPtr visual = gazebo::rendering::VisualPtr(new gazebo::rendering::Visual("bla", scene));
-//	visual->Load();
-//	visual->SetVisible(true);
-
-
-
-
-
 }
 
 //this macro should appear only once per library
