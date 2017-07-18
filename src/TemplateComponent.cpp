@@ -205,8 +205,8 @@ void TemplateComponent::updateHook() {
 	// out_torques_port.write(out_torques_var);
 //	double endTime = getSimulationTime();
 	ee = RTT::os::TimeService::Instance()->getTicks();
-	RTT::log(RTT::Warning) << "Calculation took " << 1E-9
-			* RTT::os::TimeService::ticks2nsecs(ee - ss) << RTT::endlog();
+	RTT::log(RTT::Warning) << "Calculation took " << 1E-6
+			* RTT::os::TimeService::ticks2nsecs(ee - ss) << " [ms]" << RTT::endlog();
 }
 
 void TemplateComponent::stopHook() {
