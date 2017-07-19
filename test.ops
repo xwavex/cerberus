@@ -50,7 +50,7 @@ gazebo.setInitialConfigurationForModel("robotmodel", initJointAngles);
 gazebo.toggleDynamicsSimulation(true)
 
 import("cogimon-urdf-to-kdl")
-loadComponent("cerberus", "TemplateComponent")
+loadComponent("cerberus", "cerberus::RobotCollisionDetection")
 setActivity("cerberus",0.01,10,ORO_SCHED_OTHER)
 cerberus.configure();
 

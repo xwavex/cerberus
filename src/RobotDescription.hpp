@@ -23,9 +23,6 @@
 
 #include "conversions.h"
 
-//#include "GL/glew.h"
-//#include "GLFW/glfw3.h"
-
 class RobotDescription
 {
 
@@ -84,20 +81,6 @@ private:
 
 	void get_tree_segment_names(KDL::Tree tree, std::vector<std::string> &link_names,
 			bool non_fixed_joints);
-
-//	//render TODO!
-//	struct RenderEntry {
-//		enum BUFFERS {
-//			VERTEX_BUFFER, TEXCOORD_BUFFER, NORMAL_BUFFER, INDEX_BUFFER
-//		};
-//		int elementCount;
-//		GLuint vao;
-//		GLuint vbo[4];
-//		void bindGLBuffers(std::vector<fcl::Vector3d > vertices_, std::vector<fcl::Triangle> indices_, int normalCnt, float* normals_);
-//		void render();
-//	};
-//
-//	std::map<std::string, RenderEntry> _render_objects;
 };
 
 #endif

@@ -120,7 +120,7 @@ include_directories(
     /usr/include/GL
 )
 
-orocos_component(${PROJECT_NAME} src/TemplateComponent.cpp src/RobotDescription.cpp src/conversions.cpp)
+orocos_component(${PROJECT_NAME} src/RobotCollisionDetection.cpp src/RobotDescription.cpp src/conversions.cpp)
 
 add_executable(check_kdl_parser src/check_kdl_parser.cpp src/RobotDescription.cpp src/conversions.cpp)
 
