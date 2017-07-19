@@ -49,6 +49,9 @@ private:
 	/** ####### REAL-TIME CRITICAL PART ####### */
 	void kdl2fcl(const KDL::Frame &in, fcl::Transform3d &out);
 
+//	const boost::shared_ptr<fcl::Transform3f> parseCapsule(
+//	        const boost::shared_ptr<const urdf::Link>& link,
+//	        boost::shared_ptr<fcl::CollisionObject>& collision_object);
 
 	std::string _urdf_path;
 	std::string _srdf_path;
