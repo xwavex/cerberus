@@ -154,6 +154,8 @@ bool RobotDescription::parseCollisionObjects(
 		const XBot::XBotCoreModel &_xbotcore_model,
 		const std::string &activeChainName,
 		const std::vector<std::string> &link_names) {
+	std::shared_ptr<fcl::CollisionObjectd> collisionObj_;
+
 	std::cout << "parsing collision objects" << std::endl;
 	std::cout << "number of joints of tree " << tree_.getNrOfJoints()
 			<< std::endl;
@@ -303,7 +305,7 @@ bool RobotDescription::parseCollisionObjects(
 					model->endModel();
 //					model->computeLocalAABB();
 
-					std::shared_ptr<fcl::CollisionObjectd> collisionObj_ =
+					collisionObj_ =
 							std::shared_ptr < fcl::CollisionObjectd
 									> (new fcl::CollisionObjectd(model));
 					_collision_objects[link->name] = collisionObj_;
@@ -331,7 +333,7 @@ bool RobotDescription::parseCollisionObjects(
 //				origin_tmp.position.z -= sign * (collisionGeometry->length / 2);
 
 				std::shared_ptr<fcl::CollisionGeometryd> collGeom = std::shared_ptr<fcl::CollisionGeometryd>(new fcl::Capsuled(collisionGeometry->radius, collisionGeometry->length));
-				std::shared_ptr<fcl::CollisionObjectd> collisionObj_= std::shared_ptr<fcl::CollisionObjectd>(new fcl::CollisionObjectd(collGeom));
+				collisionObj_= std::shared_ptr<fcl::CollisionObjectd>(new fcl::CollisionObjectd(collGeom));
 //
 //				std::cout << "capsule data; r: " << collisionGeometry->radius
 //						<< "l: " << collisionGeometry->length << std::endl;
@@ -386,10 +388,10 @@ bool RobotDescription::parseCollisionObjects(
 					<< ", pqy2 = " << pqy2 << ", pqz2 = " << pqz2 << std::endl;
 			out2.rotate(q2);
 
-			//					std::cout << "out:\n" << out.rotation() << std::endl;
-			//					std::cout << "out2:\n" << out2.rotation() << std::endl;
-			//					std::cout << "out2*out:\n" << (out2 * out).rotation() << std::endl;
-			//					std::cout << "axis:\n" << axis.x << ", " << axis.y << ", " << axis.z << std::endl;
+								std::cout << "out:\n" << out.rotation() << std::endl;
+								std::cout << "out2:\n" << out2.rotation() << std::endl;
+								std::cout << "out2*out:\n" << (out2 * out).rotation() << std::endl;
+								std::cout << "axis:\n" << axis.x << ", " << axis.y << ", " << axis.z << std::endl;
 
 			_joint_transforms[link->name] = out2;
 			_joint_axis[link->name] = axis;
@@ -401,8 +403,8 @@ bool RobotDescription::parseCollisionObjects(
 					<< ") was successful! (" << std::endl;
 //					<< resultingPath << ")" << std::endl;
 
-			//					std::cout << "TranslationOrigin:\n" << collisionObj_->getTranslation() << std::endl;
-			//					std::cout << "RotationOrigin:\n" << collisionObj_->getRotation() << std::endl;
+								std::cout << "TranslationOrigin:\n" << collisionObj_->getTranslation() << std::endl;
+								std::cout << "RotationOrigin:\n" << collisionObj_->getRotation() << std::endl;
 
 		} else {
 			std::cout << "Collision not defined for link: " << link->name

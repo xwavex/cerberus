@@ -36,18 +36,18 @@ robot_gazebo2.getModel("robotmodel2")
 robot_gazebo2.loadURDFAndSRDF(path_model_urdf, path_model_srdf)
 robot_gazebo2.configure()
 
-var rstrt.kinematics.JointAngles initJointAngles = rstrt.kinematics.JointAngles(7)
-initJointAngles.angles[0] = 0.0410
-initJointAngles.angles[1] = 0.0606
-initJointAngles.angles[2] = -0.0154
-initJointAngles.angles[3] = -1.3954
-initJointAngles.angles[4] = -0.0548
-initJointAngles.angles[5] = 1.1377
-initJointAngles.angles[6] = 0.0
-gazebo.setInitialConfigurationForModel("robotmodel", initJointAngles);
-
 #robot_gazebo.setControlMode("full_arm", "JointTorqueCtrl")
 gazebo.toggleDynamicsSimulation(true)
+
+var rstrt.kinematics.JointAngles initJointAngles = rstrt.kinematics.JointAngles(7)
+initJointAngles.angles[0] = 0
+initJointAngles.angles[1] = -0.01
+initJointAngles.angles[2] = 0
+initJointAngles.angles[3] = 0.01
+initJointAngles.angles[4] = 0
+initJointAngles.angles[5] = 0
+initJointAngles.angles[6] = 0.0
+gazebo.setInitialConfigurationForModel("robotmodel", initJointAngles);
 
 import("cogimon-urdf-to-kdl")
 loadComponent("cerberus", "cerberus::RobotCollisionDetection")
@@ -62,6 +62,9 @@ var ConnPolicy cp;
 connect("robot_gazebo.full_arm_JointFeedback", "cerberus.in_jointFeedback_robot_1_port", cp)
 connect("robot_gazebo2.full_arm_JointFeedback", "cerberus.in_jointFeedback_robot_2_port", cp)
 cerberus.start()
+
+#robot_gazebo2.setControlMode("full_arm","JointTorqueCtrl")
+#robot_gazebo2.setControlMode("full_arm","JointPositionCtrl")
 
 #robot_gazebo.setControlMode("full_arm","JointTorqueCtrl")
 #robot_gazebo.setControlMode("full_arm","JointPositionCtrl")
